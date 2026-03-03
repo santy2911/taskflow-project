@@ -7,4 +7,12 @@
      --primary: #7a9cff;
      --alta: #ff4757;
      --media: #ffa502;
-     --baja: #2ed573; }
+     --baja: #2ed573;}
+
+     * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body { font-family: sans-serif; background: var(--bg); color: var(--text); }
+       header { 
+        background: var(--white); 
+        border-bottom: 1px solid var(--border);
+        padding: 16px 24px; }
