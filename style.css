@@ -136,3 +136,20 @@
                     color: var(--baja);
                     border: 1px solid var(--baja);
                     }
+
+            @media (max-width: 768px) {
+                .contenedor {
+                    flex-direction: column;
+                }
+
+                aside {
+                    width: auto;
+                    margin: 16px;
+                }
+
+                aside nav {
+                    flex-direction: row;
+                    flex-wrap: wrap;
+                    gap: 6px;
+                }
+                }
