@@ -1,1 +1,10 @@
-    
+:root {
+     --bg: #1a1a2e;
+     --white: #16213e;
+     --border: #0f3460;
+     --text: #e0e0e0;
+     --muted: #aaaaaa;
+     --primary: #7a9cff;
+     --alta: #ff4757;
+     --media: #ffa502;
+     --baja: #2ed573; }
