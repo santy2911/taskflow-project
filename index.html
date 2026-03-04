@@ -26,44 +26,38 @@
 
     <main>
 
-      <section>
+      <div class="formulario">
+        <input type="text" id="inputTarea" placeholder="Nueva tarea..." />
+          <select id="selectCategoria">
+            <option value="Personal">Personal</option>
+            <option value="Estudios">Estudios</option>
+            <option value="Videojuegos">Videojuegos</option>
+          </select>
+
+          <select id="selectPrioridad">
+            <option value="alta">Alta</option>
+            <option value="media">Media</option>
+            <option value="baja">Baja</option>
+          </select>
+            <button id="btnAnadir">Añadir</button>
+            </div>
+
+        <input type="text" id="inputBusqueda" placeholder="Buscar tarea"/>
+
+      <section id="seccion-alta">
         <h2>Prioridad Alta</h2>
-
-        <div class="tarea">
-          <div class="nombre">Hacer Ejercicio</div>
-          <div class="categoria">Categoría: Personal</div>
-          <span class="badge alta">Alta</span>
-        </div>
-
-        <div class="tarea">
-          <div class="nombre">Estudiar</div>
-          <div class="categoria">Categoría: Estudios</div>
-          <span class="badge alta">Alta</span>
-        </div>
       </section>
 
-      <section>
-        <h2>Prioridad Media</h2>
+        <section id="seccion-media">
+          <h2>Prioridad Media</h2>
+        </section>
 
-        <div class="tarea">
-          <div class="nombre">Revisar Gastos</div>
-          <div class="categoria">Categoría: Personal</div>
-          <span class="badge media">Media</span>
-        </div>
-      </section>
-
-      <section>
-        <h2>Prioridad Baja</h2>
-
-        <div class="tarea">
-          <div class="nombre">Jugar Videojuegos</div>
-          <div class="categoria">Categoría: Videojuegos</div>
-          <span class="badge baja">Baja</span>
-        </div>
-      </section>
+        <section id="seccion-baja">
+          <h2>Prioridad Baja</h2>
+        </section>
 
     </main>
   </div>
-
+        <script src="app.js"></script>
 </body>
 </html>
