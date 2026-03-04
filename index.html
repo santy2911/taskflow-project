@@ -15,12 +15,12 @@
   <div class="contenedor">
 
     <aside>
-      <h3>Menú lateral</h3>
+      <h3>Filtros</h3>
       <nav>
-        <a href="#" class="active">Todas</a>
-        <a href="#">Personal</a>
-        <a href="#">Estudios</a>
-        <a href="#">Videojuegos</a>
+        <a href="#" class="active" data-filtro="todas">Todas</a>
+        <a href="#" data-filtro="alta">Prioridad Alta</a>
+        <a href="#" data-filtro="media">Prioridad Media</a>
+        <a href="#" data-filtro="baja">Prioridad Baja</a>
       </nav>
     </aside>
 
@@ -28,36 +28,32 @@
 
       <div class="formulario">
         <input type="text" id="inputTarea" placeholder="Nueva tarea"/>
-          <select id="selectCategoria">
-            <option value="Personal">Personal</option>
-            <option value="Estudios">Estudios</option>
-            <option value="Videojuegos">Videojuegos</option>
-          </select>
+        <input type="text" id="inputCategoria" placeholder="Categoría"/>
+        <select id="selectPrioridad">
+          <option value="alta">Alta</option>
+          <option value="media">Media</option>
+          <option value="baja">Baja</option>
+        </select>
+        <button id="btnAnadir">Añadir</button>
+      </div>
 
-          <select id="selectPrioridad">
-            <option value="alta">Alta</option>
-            <option value="media">Media</option>
-            <option value="baja">Baja</option>
-          </select>
-            <button id="btnAnadir">Añadir</button>
-            </div>
-
-        <input type="text" id="inputBusqueda" placeholder="Buscar tarea"/>
+      <input type="text" id="inputBusqueda" placeholder="Buscar tarea"/>
 
       <section id="seccion-alta">
         <h2>Prioridad Alta</h2>
       </section>
 
-        <section id="seccion-media">
-          <h2>Prioridad Media</h2>
-        </section>
+      <section id="seccion-media">
+        <h2>Prioridad Media</h2>
+      </section>
 
-        <section id="seccion-baja">
-          <h2>Prioridad Baja</h2>
-        </section>
+      <section id="seccion-baja">
+        <h2>Prioridad Baja</h2>
+      </section>
 
     </main>
   </div>
-        <script src="app.js"></script>
+
+  <script src="app.js"></script>
 </body>
 </html>
