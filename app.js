@@ -109,7 +109,7 @@ function cargarTareas() {
     } else {
         const ejemplos = [
             { id: 1, texto: 'Hacer ejercicio', categoria: 'Personal', prioridad: 'alta', completada: false },
-            { id: 2, texto: 'Estudiar JavaScript', categoria: 'Estudios', prioridad: 'alta', completada: false },
+            { id: 2, texto: 'Estudiar', categoria: 'Estudios', prioridad: 'alta', completada: false },
             { id: 3, texto: 'Revisar gastos', categoria: 'Personal', prioridad: 'media', completada: false },
             { id: 4, texto: 'Jugar videojuegos', categoria: 'Videojuegos', prioridad: 'baja', completada: false }
         ];
