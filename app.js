@@ -5,6 +5,7 @@ const btnAnadir = document.getElementById('btnAnadir');
 const inputBusqueda = document.getElementById('inputBusqueda');
 
 let tareas = [];
+let filtroActivo = 'todas';
 
 inputTarea.addEventListener('keydown', function(e) {
     if (e.key === 'Enter') {
@@ -21,6 +22,16 @@ function actualizarContadores() {
         const seccion = document.getElementById('seccion-' + prioridad);
         const cantidad = seccion.querySelectorAll('.tarea').length;
         seccion.querySelector('h2').textContent = 'Prioridad ' + prioridad + ' (' + cantidad + ')';
+    });
+}
+
+function aplicarFiltros() {
+    const busqueda = inputBusqueda.value.toLowerCase().trim();
+    document.querySelectorAll('.tarea').forEach(function(tarea) {
+        const nombre = tarea.querySelector('.nombre').textContent.toLowerCase();
+        const coincideBusqueda = nombre.includes(busqueda);
+        const coincideFiltro = filtroActivo === 'todas' || tarea.dataset.prioridad === filtroActivo;
+        tarea.style.display = coincideBusqueda && coincideFiltro ? 'flex' : 'none';
     });
 }
 
@@ -73,11 +84,7 @@ btnAnadir.addEventListener('click', function() {
 });
 
 inputBusqueda.addEventListener('input', function() {
-    const busqueda = inputBusqueda.value.toLowerCase().trim();
-    document.querySelectorAll('.tarea').forEach(function(tarea) {
-        const nombre = tarea.querySelector('.nombre').textContent.toLowerCase();
-        tarea.style.display = nombre.includes(busqueda) ? 'flex' : 'none';
-    });
+    aplicarFiltros();
 });
 
 const enlaces = document.querySelectorAll('aside nav a');
@@ -86,15 +93,8 @@ enlaces.forEach(function(enlace) {
         e.preventDefault();
         enlaces.forEach(a => a.classList.remove('active'));
         enlace.classList.add('active');
-
-        const filtro = enlace.dataset.filtro;
-        document.querySelectorAll('.tarea').forEach(function(tarea) {
-            if (filtro === 'todas') {
-                tarea.style.display = 'flex';
-            } else {
-                tarea.style.display = tarea.dataset.prioridad === filtro ? 'flex' : 'none';
-            }
-        });
+        filtroActivo = enlace.dataset.filtro;
+        aplicarFiltros();
     });
 });
 
