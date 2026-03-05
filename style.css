@@ -1,0 +1,39 @@
+.tarea {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: background 0.2s ease, border-color 0.2s ease;
+  animation: entrar 0.3s ease;
+}
+.tarea:hover { background: #f3f4f6; border-color: #7a9cff; border-width: 2px; }
+.tarea:focus-within { border-color: #7a9cff; border-width: 2px; }
+.nombre { flex: 1; font-size: 1rem; cursor: pointer; color: #1f2937; }
+.categoria { font-size: 0.8rem; color: #6b7280; }
+.badge { font-size: 0.75rem; font-weight: bold; padding: 4px 12px; border-radius: 20px; }
+.alta  { background: #ff47571a; color: #ff4757; border: 1px solid #ff4757; }
+.media { background: #ffa5021a; color: #ffa502; border: 1px solid #ffa502; }
+.baja  { background: #2ed5731a; color: #2ed573; border: 1px solid #2ed573; }
+.btnEliminar { background: transparent; border: none; color: #6b7280; cursor: pointer; font-size: 1rem; padding: 4px 8px; border-radius: 4px; transition: color 0.2s ease, background 0.2s ease, transform 0.15s ease; }
+.btnEliminar:hover { color: #ff4757; background: #ff47571a; transform: scale(1.15); }
+.btnEliminar:focus { outline: 2px solid #ff4757; outline-offset: 2px; }
+.tarea.completada { opacity: 0.6; }
+.tarea.completada .nombre { text-decoration: line-through; color: #9ca3af; }
+.active { background: #e0e7ff !important; color: #7a9cff !important; }
+.dark .tarea { background: #243656; border-color: #2a4a7f; }
+.dark .tarea:hover { background: #1e2a4a; border-color: #7a9cff; }
+.dark .nombre { color: #ffffff; }
+.dark .categoria { color: #aaaaaa; }
+.dark .btnEliminar { color: #aaaaaa; }
+.dark .active { background: #0f3460 !important; color: #7a9cff !important; }
+@keyframes entrar { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 768px) {
+  body > div { flex-direction: column; padding: 0 16px; }
+  aside { width: auto !important; margin: 16px 0 !important; }
+  aside nav { flex-direction: row; flex-wrap: wrap; gap: 6px; }
+  main { padding: 16px 0; }
+}
