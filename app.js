@@ -1,21 +1,19 @@
-const inputTarea = document.getElementById('inputTarea');
+// ── Elementos del DOM ──────────────────────────────────
+const inputTarea     = document.getElementById('inputTarea');
 const inputCategoria = document.getElementById('inputCategoria');
 const selectPrioridad = document.getElementById('selectPrioridad');
-const btnAnadir = document.getElementById('btnAnadir');
-const inputBusqueda = document.getElementById('inputBusqueda');
+const btnAnadir      = document.getElementById('btnAnadir');
+const inputBusqueda  = document.getElementById('inputBusqueda');
+const btnTema        = document.getElementById('btnTema');
 
 let tareas = [];
 
-inputTarea.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') {
-        btnAnadir.click();
-    }
-});
-
+// ── Storage ────────────────────────────────────────────
 function guardarEnStorage() {
     localStorage.setItem('tareas', JSON.stringify(tareas));
 }
 
+// ── Contadores de sección ──────────────────────────────
 function actualizarContadores() {
     ['alta', 'media', 'baja'].forEach(function(prioridad) {
         const seccion = document.getElementById('seccion-' + prioridad);
@@ -24,6 +22,7 @@ function actualizarContadores() {
     });
 }
 
+// ── Crear elemento de tarea ────────────────────────────
 function crearTareaElemento(t) {
     const tarea = document.createElement('div');
     tarea.classList.add('tarea');
@@ -55,6 +54,7 @@ function crearTareaElemento(t) {
     return tarea;
 }
 
+// ── Añadir tarea ───────────────────────────────────────
 btnAnadir.addEventListener('click', function() {
     const texto = inputTarea.value.trim();
     const categoria = inputCategoria.value.trim() || 'General';
@@ -72,6 +72,11 @@ btnAnadir.addEventListener('click', function() {
     inputCategoria.value = '';
 });
 
+inputTarea.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') btnAnadir.click();
+});
+
+// ── Buscador ───────────────────────────────────────────
 inputBusqueda.addEventListener('input', function() {
     const busqueda = inputBusqueda.value.toLowerCase().trim();
     document.querySelectorAll('.tarea').forEach(function(tarea) {
@@ -80,6 +85,7 @@ inputBusqueda.addEventListener('input', function() {
     });
 });
 
+// ── Filtros del sidebar ────────────────────────────────
 const enlaces = document.querySelectorAll('aside nav a');
 enlaces.forEach(function(enlace) {
     enlace.addEventListener('click', function(e) {
@@ -89,37 +95,41 @@ enlaces.forEach(function(enlace) {
 
         const filtro = enlace.dataset.filtro;
         document.querySelectorAll('.tarea').forEach(function(tarea) {
-            if (filtro === 'todas') {
-                tarea.style.display = 'flex';
-            } else {
-                tarea.style.display = tarea.dataset.prioridad === filtro ? 'flex' : 'none';
-            }
+            tarea.style.display = (filtro === 'todas' || tarea.dataset.prioridad === filtro) ? 'flex' : 'none';
         });
     });
 });
 
+// ── Modo oscuro ────────────────────────────────────────
+function aplicarTema(oscuro) {
+    document.documentElement.classList.toggle('dark', oscuro);
+    btnTema.textContent = oscuro ? '🌙' : '☀️';
+    localStorage.setItem('tema', oscuro ? 'dark' : 'light');
+}
+
+aplicarTema(localStorage.getItem('tema') === 'dark');
+
+btnTema.addEventListener('click', function() {
+    aplicarTema(!document.documentElement.classList.contains('dark'));
+});
+
+// ── Cargar tareas ──────────────────────────────────────
 function cargarTareas() {
     const guardadas = localStorage.getItem('tareas');
-    if (guardadas) {
-        tareas = JSON.parse(guardadas);
-        tareas.forEach(function(t) {
-            const tarea = crearTareaElemento(t);
-            document.getElementById('seccion-' + t.prioridad).appendChild(tarea);
-        });
-    } else {
-        const ejemplos = [
-            { id: 1, texto: 'Hacer ejercicio', categoria: 'Personal', prioridad: 'alta', completada: false },
-            { id: 2, texto: 'Estudiar', categoria: 'Estudios', prioridad: 'alta', completada: false },
-            { id: 3, texto: 'Revisar gastos', categoria: 'Personal', prioridad: 'media', completada: false },
-            { id: 4, texto: 'Jugar videojuegos', categoria: 'Videojuegos', prioridad: 'baja', completada: false }
-        ];
-        tareas = ejemplos;
-        guardarEnStorage();
-        tareas.forEach(function(t) {
-            const tarea = crearTareaElemento(t);
-            document.getElementById('seccion-' + t.prioridad).appendChild(tarea);
-        });
-    }
+
+    tareas = guardadas ? JSON.parse(guardadas) : [
+        { id: 1, texto: 'Hacer ejercicio',  categoria: 'Personal',    prioridad: 'alta',  completada: false },
+        { id: 2, texto: 'Estudiar',          categoria: 'Estudios',    prioridad: 'alta',  completada: false },
+        { id: 3, texto: 'Revisar gastos',    categoria: 'Personal',    prioridad: 'media', completada: false },
+        { id: 4, texto: 'Jugar videojuegos', categoria: 'Videojuegos', prioridad: 'baja',  completada: false }
+    ];
+
+    if (!guardadas) guardarEnStorage();
+
+    tareas.forEach(function(t) {
+        document.getElementById('seccion-' + t.prioridad).appendChild(crearTareaElemento(t));
+    });
+
     actualizarContadores();
 }
 
