@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "Taskflow Project",
   "main": "app.js",
-  "scripts": {
-    "build": "tailwindcss -i ./input.css -o ./style.css",
-    "watch": "tailwindcss -i ./input.css -o ./style.css --watch"
-  },
+"scripts": {
+  "build:local": "tailwindcss -i ./input.css -o ./style.css",
+  "watch": "tailwindcss -i ./input.css -o ./style.css --watch"
+},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/santy2911/taskflow-project.git"
