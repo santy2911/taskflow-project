@@ -7,12 +7,10 @@ const btnTema        = document.getElementById('btnTema');
 
 let tareas = [];
 
-// ── Storage ──
 function guardarEnStorage() {
     localStorage.setItem('tareas', JSON.stringify(tareas));
 }
 
-// ── Contadores de sección ──
 function actualizarContadores() {
     ['alta', 'media', 'baja'].forEach(function(prioridad) {
         const seccion = document.getElementById('seccion-' + prioridad);
@@ -21,7 +19,6 @@ function actualizarContadores() {
     });
 }
 
-// ── Crear elemento de tarea ──
 function crearTareaElemento(t) {
     const tarea = document.createElement('div');
     tarea.classList.add('tarea');
@@ -53,7 +50,6 @@ function crearTareaElemento(t) {
     return tarea;
 }
 
-// ── Añadir tarea ──
 btnAnadir.addEventListener('click', function() {
     const texto = inputTarea.value.trim();
     const categoria = inputCategoria.value.trim() || 'General';
@@ -75,7 +71,6 @@ inputTarea.addEventListener('keydown', function(e) {
     if (e.key === 'Enter') btnAnadir.click();
 });
 
-// ── Buscador ──
 inputBusqueda.addEventListener('input', function() {
     const busqueda = inputBusqueda.value.toLowerCase().trim();
     document.querySelectorAll('.tarea').forEach(function(tarea) {
@@ -84,7 +79,6 @@ inputBusqueda.addEventListener('input', function() {
     });
 });
 
-// ── Filtros del sidebar ──
 const enlaces = document.querySelectorAll('aside nav a');
 enlaces.forEach(function(enlace) {
     enlace.addEventListener('click', function(e) {
@@ -99,7 +93,7 @@ enlaces.forEach(function(enlace) {
     });
 });
 
-// ── Modo oscuro ──
+
 function aplicarTema(oscuro) {
     document.documentElement.classList.toggle('dark', oscuro);
     btnTema.textContent = oscuro ? '🌙' : '☀️';
@@ -112,7 +106,7 @@ btnTema.addEventListener('click', function() {
     aplicarTema(!document.documentElement.classList.contains('dark'));
 });
 
-// ── Cargar tareas ──
+
 function cargarTareas() {
     const guardadas = localStorage.getItem('tareas');
 
