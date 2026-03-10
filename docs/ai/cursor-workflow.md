@@ -119,3 +119,137 @@ Ctrl + Shift + I — Composer
 Ctrl + J — terminal
 Ctrl + P — buscar archivos
 
+
+
+
+
+
+
+
+
+
+## Refactorizaciones
+
+1º Lo que he pedido: Simplifica esta función
+
+function cargarTareas() {
+    const guardadas = localStorage.getItem('tareas');
+
+    tareas = guardadas ? JSON.parse(guardadas) : [];
+
+
+    tareas.forEach(function(t) {
+        document.getElementById('seccion-' + t.prioridad).appendChild(crearTareaElemento(t));
+    });
+
+    actualizarContadores();
+}
+
+
+La respuesta de Cursor:
+
+function cargarTareas() {
+    const guardadas = localStorage.getItem('tareas');
+
+    tareas = guardadas ? JSON.parse(guardadas) : [];
+
+
+    tareas.forEach(function(t) {
+        document.getElementById('seccion-' + t.prioridad).appendChild(crearTareaElemento(t));
+    });
+
+    actualizarContadores();
+}
+
+
+
+
+
+La respuesta de Cursor en este caso Cursor ha considerado que la función ya estaba simplificada y no ha propuesto cambios.
+
+
+
+2º Lo que he pedido: En btnAnadir.addEventListener, Añade validación para que no se puedan añadir tareas duplicadas
+
+Como estaba al principio:
+
+btnAnadir.addEventListener('click', function() {
+    const texto = inputTarea.value.trim();
+    const categoria = inputCategoria.value.trim() || 'General';
+    if (texto === '') return;
+
+    const t = { id: Date.now(), texto, categoria, prioridad: selectPrioridad.value, completada: false };
+    tareas.push(t);
+    guardarEnStorage();
+
+    const tarea = crearTareaElemento(t);
+    document.getElementById('seccion-' + t.prioridad).appendChild(tarea);
+    actualizarContadores();
+
+    inputTarea.value = '';
+    inputCategoria.value = '';
+});
+
+
+La respuesta de Cursor:
+
+btnAnadir.addEventListener('click', function() {
+    const texto = inputTarea.value.trim();
+    const categoria = inputCategoria.value.trim() || 'General';
+    if (texto === '') return;
+
+    // Validar que no exista ya una tarea con el mismo texto y categoría
+    const tareaDuplicada = tareas.some(
+        t => t.texto.toLowerCase() === texto.toLowerCase() && t.categoria.toLowerCase() === categoria.toLowerCase()
+    );
+    if (tareaDuplicada) {
+        alert('Ya existe una tarea con el mismo nombre y categoría.');
+        return;
+    }
+
+    const t = { id: Date.now(), texto, categoria, prioridad: selectPrioridad.value, completada: false };
+    tareas.push(t);
+    guardarEnStorage();
+
+    const tarea = crearTareaElemento(t);
+    document.getElementById('seccion-' + t.prioridad).appendChild(tarea);
+    actualizarContadores();
+
+    inputTarea.value = '';
+    inputCategoria.value = '';
+});
+
+
+
+
+
+3º Lo que he pedido: Mejora esta función
+
+inputBusqueda.addEventListener('input', function() {
+    const busqueda = inputBusqueda.value.toLowerCase().trim();
+    document.querySelectorAll('.tarea').forEach(function(tarea) {
+        const nombre = tarea.querySelector('.nombre').textContent.toLowerCase();
+        tarea.style.display = nombre.includes(busqueda) ? 'flex' : 'none';
+    });
+});
+
+
+La respuesta de Cursor:
+
+inputBusqueda.addEventListener('input', function() {
+    const busqueda = inputBusqueda.value.toLowerCase().trim();
+    const tareas = document.querySelectorAll('.tarea');
+    if (busqueda === "") {
+        tareas.forEach(t => t.style.display = 'flex');
+        return;
+    }
+    tareas.forEach(function(tarea) {
+        const nombre = tarea.querySelector('.nombre').textContent.toLowerCase();
+        const categoria = tarea.querySelector('.categoria') ? tarea.querySelector('.categoria').textContent.toLowerCase() : "";
+        if (nombre.includes(busqueda) || categoria.includes(busqueda)) {
+            tarea.style.display = 'flex';
+        } else {
+            tarea.style.display = 'none';
+        }
+    });
+});
