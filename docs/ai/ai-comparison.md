@@ -8,7 +8,7 @@ En este documento voy a comparar las respuestas de ChatGPT y Claude: explicació
 Lo que he pedido: Quiero que me expliques estos tres conceptos tecnicos: "closures", "event loop" y "DOM"
 
 
-### -Respuesta de ChatGPT:
+### Respuesta de ChatGPT:
 
 1. Closures
 
@@ -169,7 +169,7 @@ DOM	Representación del HTML como árbol manipulable con JS
 
 
 
-#### -Respuesta de Claude:
+#### Respuesta de Claude:
 
 Closures
 Un closure es una función que "recuerda" las variables del entorno donde fue creada, incluso después de que ese entorno ya no esté activo.
@@ -234,7 +234,7 @@ En resumen: los closures te dan memoria entre llamadas, el event loop te permite
 
 
 
-## -Segunda pregunta: Pasarles 3 funciones con errores para que los detecten:
+## Segunda pregunta: Pasarles 3 funciones con errores para que los detecten:
 
 Lo que he pedido: puedes detectar los errores en estas funciones? explicame porque fallan
 1º
@@ -259,7 +259,7 @@ function calcularMedia(numeros) {
 }
 
 
-### -Respuesta de ChatGPT:
+### Respuesta de ChatGPT:
 
 1️⃣ Función sumar
 function sumar(a, b) {
@@ -394,7 +394,7 @@ calcularMedia	<= length	Accede a un índice inexistente
 
 
 
-#### -Respuesta de Claude:
+#### Respuesta de Claude:
 
 Función 1
 jsfunction sumar(a, b) {
@@ -445,7 +445,7 @@ Error de índice fuera de rango → accedes a memoria que no existe (función 3)
 
 
 
-## -Tercera pregunta: Describe en lenguaje natural tres funciones distintas y pide que generen la implementación
+## Tercera pregunta: Describe en lenguaje natural tres funciones distintas y pide que generen la implementación
 
 Lo que he pedido: puedes crear estas 3 funciones en JavaScript:
 
@@ -454,7 +454,7 @@ Lo que he pedido: puedes crear estas 3 funciones en JavaScript:
 3ºCrea una función que reciba un array de tareas y una categoría, y devuelva las tareas de esa categoría ordenadas por prioridad: primero alta, luego media y luego baja
 
 
-### -Respuesta de ChatGPT:
+### Respuesta de ChatGPT:
 
 Supongamos que cada tarea tiene una estructura más o menos así:
 
@@ -535,7 +535,7 @@ console.log(tareasPorCategoriaOrdenadas(tareas, "estudio"));
 
 
 
-#### -Respuesta de Claude:
+#### Respuesta de Claude:
 
 Las tres funciones están bastante relacionadas con TaskFlow, así que las escribo con esa estructura en mente:
 Función 1
@@ -589,7 +589,7 @@ jsconst tareas = [
 
 
 
-## -Conclusiones Generales
+## Conclusiones Generales
 
 ### Conceptos técnicos
 ChatGPT usó más emojis y formato visual, lo que hace la explicación sea más fácil de leer a primera vista. En cambio, Claude fue más conciso y relacionó los conceptos directamente con TaskFlow, lo que lo hace más útil en contexto de proyecto.
@@ -598,7 +598,7 @@ ChatGPT usó más emojis y formato visual, lo que hace la explicación sea más 
 Ambos detectaron bien los tres errores. ChatGPT explicó cada error con más detalle y ejemplos. Por otro lado, Claude fue más directo y clasificó los errores por tipo (lógico, de tipo, de índice), lo que es más útil para aprender.
 
 ### Generación de código
-El código generado por ambos es prácticamente idéntico en las funciones 1 y 3. En la función 2, ChatGPT usó un bucle forEach mientras que Claude usó filter dos veces, siendo esta última más fácil de leer. Aunque ambas respuestas estan bien.
+El código generado por ambos es prácticamente idéntico en las funciones 1 y 3. En la función 2, ChatGPT usó un bucle forEach mientras que Claude usó filter dos veces, siendo esta última más fácil de leer. Aunque ambas respuestas están bien.
 
 ### Conclusión final
 Para explicaciones visuales y detalladas ChatGPT es más claro. Para respuestas concisas y contextualizadas al proyecto, Claude es más útil.

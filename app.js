@@ -7,18 +7,20 @@ const btnTema        = document.getElementById('btnTema');
 
 let tareas = [];
 
+// Guarda la lista de tareas en el localStorage
 function guardarEnStorage() {
     localStorage.setItem('tareas', JSON.stringify(tareas));
 }
 
+// Actualiza los contadores de tareas por prioridad en cada sección
 function actualizarContadores() {
-    ['alta', 'media', 'baja'].forEach(function(prioridad) {
+    ['alta', 'media', 'baja'].forEach(prioridad => {
         const seccion = document.getElementById('seccion-' + prioridad);
-        const cantidad = seccion.querySelectorAll('.tarea').length;
-        seccion.querySelector('h2').textContent = 'Prioridad ' + prioridad + ' (' + cantidad + ')';
+        seccion.querySelector('h2').textContent = `Prioridad ${prioridad} (${seccion.querySelectorAll('.tarea').length})`;
     });
 }
 
+// Crea y devuelve el elemento visual de una tarea con sus eventos asociados
 function crearTareaElemento(t) {
     const tarea = document.createElement('div');
     tarea.classList.add('tarea');
@@ -94,6 +96,7 @@ enlaces.forEach(function(enlace) {
 });
 
 
+// Aplica el tema claro u oscuro y lo guarda en el localStorage
 function aplicarTema(oscuro) {
     document.documentElement.classList.toggle('dark', oscuro);
     btnTema.textContent = oscuro ? '🌙' : '☀️';
@@ -107,6 +110,7 @@ btnTema.addEventListener('click', function() {
 });
 
 
+// Carga las tareas desde el localStorage y las pinta en la interfaz
 function cargarTareas() {
     const guardadas = localStorage.getItem('tareas');
 
