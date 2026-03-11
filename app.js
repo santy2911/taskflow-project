@@ -201,6 +201,16 @@ inputBusqueda.addEventListener('input', function() {
 filtroPrioridad.addEventListener('change', aplicarFiltros);
 filtroEstado.addEventListener('change', aplicarFiltros);
 
+document.getElementById('btnEliminarTodo').addEventListener('click', function() {
+    if (tareas.length === 0) return;
+    if (!confirm('¿Seguro que quieres eliminar todas las tareas?')) return;
+    tareas = [];
+    guardarEnStorage();
+    document.querySelectorAll('.tarea').forEach(t => t.remove());
+    actualizarContadores();
+    actualizarProgreso();
+});
+
 // Aplica el tema claro u oscuro y lo guarda en el localStorage
 function aplicarTema(oscuro) {
     document.documentElement.classList.toggle('dark', oscuro);
