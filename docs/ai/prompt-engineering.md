@@ -369,7 +369,7 @@ style.css referenciado pero no adjunto: Se enlaza un href="style.css" que no exi
 
 
 
-## Quinta pregunta:
+## Quinta pregunta: Guarda al menos diez prompts útiles. Explica por qué cada prompt funciona bien
 
 Los cuatro prompts de antes mas estos:
 
