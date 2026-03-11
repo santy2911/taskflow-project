@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Mis Tareas</title>
+  <title>TaskFlow</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="style.css"/>
 <script>
@@ -22,117 +22,84 @@
   }
 </script>
 </head>
-<body class=
-  "bg-gray-100 dark:bg-[#1a1a2e] text-gray-800 dark:text-white min-h-screen font-sans text-sm">
+<body class="bg-gray-100 dark:bg-[#1a1a2e] text-gray-800 dark:text-white min-h-screen font-sans text-sm">
 
-  <header class=
-    "bg-white dark:bg-[#243656] border-b border-gray-200 dark:border-[#2a4a7f] px-8 py-5">
-
-    <div class=
-      "relative flex items-center justify-center max-w-[1200px] mx-auto">
-
-      <h1 class=
-        "text-2xl font-bold">Mis Tareas</h1>
-
-      <button id= "btnTema"
-
-        class="absolute right-0 text-xl w-9 h-9 flex items-center justify-center rounded-lg
-               bg-gray-100 dark:bg-[#1a1a2e] hover:bg-gray-200 dark:hover:bg-[#0f3460] transition-all duration-200">
-        🌙
-      </button>
+  <header class="bg-white dark:bg-[#243656] border-b border-gray-200 dark:border-[#2a4a7f] px-8 py-5">
+    <div class="relative flex items-center justify-center max-w-[1200px] mx-auto">
+      <h1 class="text-2xl font-bold">Mis Tareas</h1>
+      <button id="btnTema" class="absolute right-0 text-xl w-9 h-9 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-[#1a1a2e] hover:bg-gray-200 dark:hover:bg-[#0f3460] transition-all duration-200">🌙</button>
     </div>
   </header>
 
-  <div class=
-    "flex max-w-[1200px] mx-auto px-6 min-h-[calc(100vh-61px)]">
+  <div class="flex max-w-[1200px] mx-auto px-6 min-h-[calc(100vh-61px)]">
 
-    <aside class=
-      "w-[200px] shrink-0 bg-white dark:bg-[#243656] border-2 border-[#7a9cff] rounded-xl mt-5 mr-4 mb-5 p-5 h-fit">
+    <aside class="w-[200px] shrink-0 bg-white dark:bg-[#243656] border-2 border-[#7a9cff] rounded-xl mt-5 mr-4 mb-5 p-5 h-fit">
+      <!-- Barra de progreso -->
+      <div class="mb-5">
+        <div class="flex justify-between items-center mb-1.5">
+          <span class="text-xs uppercase text-gray-400 dark:text-[#aaaaaa] tracking-wider">Progreso</span>
+          <span id="porcentajeTexto" class="text-xs font-bold text-[#7a9cff]">0%</span>
+        </div>
+        <div class="w-full h-2 bg-gray-200 dark:bg-[#1a1a2e] rounded-full overflow-hidden">
+          <div id="barraProgreso" class="h-full bg-[#7a9cff] rounded-full transition-all duration-500 ease-out" style="width: 0%"></div>
+        </div>
+        <p id="progresoTextoDetalle" class="text-[10px] text-gray-400 dark:text-[#aaaaaa] mt-1 text-right">0 de 0 tareas</p>
+      </div>
+      <div class="border-t border-gray-200 dark:border-[#2a4a7f] mb-4"></div>
 
-      <h3 class=
-        "text-xs uppercase text-gray-400 dark:text-[#aaaaaa] mb-3 tracking-wider">Filtros</h3>
-
-      <nav class=
-        "flex flex-col gap-1">
-        
-        <a href="#" data-filtro="todas"
-          class="active block no-underline text-gray-700 dark:text-white px-2.5 py-2 rounded-md text-sm
-                 hover:bg-gray-100 dark:hover:bg-[#0f3460] hover:text-[#7a9cff] transition-all duration-200">
-          Todas
-        </a>
-
-        <a href="#" data-filtro="alta"
-          class="block no-underline text-gray-700 dark:text-white px-2.5 py-2 rounded-md text-sm
-                 hover:bg-gray-100 dark:hover:bg-[#0f3460] hover:text-[#7a9cff] transition-all duration-200">
-          🔴Prioridad Alta
-        </a>
-
-        <a href="#" data-filtro="media"
-          class="block no-underline text-gray-700 dark:text-white px-2.5 py-2 rounded-md text-sm
-                 hover:bg-gray-100 dark:hover:bg-[#0f3460] hover:text-[#7a9cff] transition-all duration-200">
-          🟠Prioridad Media
-        </a>
-        
-        <a href="#" data-filtro="baja"
-          class="block no-underline text-gray-700 dark:text-white px-2.5 py-2 rounded-md text-sm
-                 hover:bg-gray-100 dark:hover:bg-[#0f3460] hover:text-[#7a9cff] transition-all duration-200">
-          🟢Prioridad Baja
-        </a>
-
-      </nav>
+      <h3 class="text-xs uppercase text-gray-400 dark:text-[#aaaaaa] mb-3 tracking-wider">Filtros</h3>
+      <div class="flex flex-col gap-4">
+        <div>
+          <label class="text-xs text-gray-400 dark:text-[#aaaaaa] mb-1 block">Prioridad</label>
+          <select id="filtroPrioridad" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-[#2a4a7f] bg-white dark:bg-[#1a1a2e] text-gray-800 dark:text-white text-sm outline-none cursor-pointer focus:border-[#7a9cff] transition-all duration-200">
+            <option value="todas">Todas</option>
+            <option value="alta">Alta</option>
+            <option value="media">Media</option>
+            <option value="baja">Baja</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs text-gray-400 dark:text-[#aaaaaa] mb-1 block">Estado</label>
+          <select id="filtroEstado" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-[#2a4a7f] bg-white dark:bg-[#1a1a2e] text-gray-800 dark:text-white text-sm outline-none cursor-pointer focus:border-[#7a9cff] transition-all duration-200">
+            <option value="todas">Todas</option>
+            <option value="pendientes">Pendientes</option>
+            <option value="completadas">Completadas</option>
+          </select>
+        </div>
+        <button id="btnEliminarTodo" class="w-full py-2 rounded-lg text-[#ff4757] border border-[#ff4757] text-sm font-bold hover:bg-[#ff47571a] transition-all duration-200">
+          Eliminar tareas
+        </button>
+      </div>
     </aside>
-   
+
     <main class="flex-1 py-6">
 
       <div class="flex gap-2 mb-3 flex-wrap">
-        
-        <input type=
-          "text" id="inputTarea" placeholder="Nueva tarea"
-          class="flex-1 px-3.5 py-2.5 rounded-lg border border-gray-300 dark:border-[#2a4a7f]
-                 bg-white dark:bg-[#243656] text-gray-800 dark:text-white text-sm
-                 placeholder-gray-400 dark:placeholder-[#aaaaaa] outline-none
-                 focus:border-[#7a9cff] hover:border-[#7a9cff]/50 transition-all duration-200"/>
-
-        <input type=
-        "text" id="inputCategoria" placeholder="Categoría"
-          class="flex-1 px-3.5 py-2.5 rounded-lg border border-gray-300 dark:border-[#2a4a7f]
-                 bg-white dark:bg-[#243656] text-gray-800 dark:text-white text-sm
-                 placeholder-gray-400 dark:placeholder-[#aaaaaa] outline-none
-                 focus:border-[#7a9cff] hover:border-[#7a9cff]/50 transition-all duration-200"/>
-
+        <input type="text" id="inputTarea" placeholder="Nueva tarea"
+          class="flex-1 px-3.5 py-2.5 rounded-lg border border-gray-300 dark:border-[#2a4a7f] bg-white dark:bg-[#243656] text-gray-800 dark:text-white text-sm placeholder-gray-400 dark:placeholder-[#aaaaaa] outline-none focus:border-[#7a9cff] hover:border-[#7a9cff]/50 transition-all duration-200"/>
+        <input type="text" id="inputCategoria" placeholder="Categoría"
+          class="flex-1 px-3.5 py-2.5 rounded-lg border border-gray-300 dark:border-[#2a4a7f] bg-white dark:bg-[#243656] text-gray-800 dark:text-white text-sm placeholder-gray-400 dark:placeholder-[#aaaaaa] outline-none focus:border-[#7a9cff] hover:border-[#7a9cff]/50 transition-all duration-200"/>
         <select id="selectPrioridad"
-          class="px-3.5 py-2.5 rounded-lg border border-gray-300 dark:border-[#2a4a7f]
-                 bg-white dark:bg-[#243656] text-gray-800 dark:text-white text-sm outline-none cursor-pointer
-                 focus:border-[#7a9cff] hover:border-[#7a9cff]/50 transition-all duration-200">
-
+          class="px-3.5 py-2.5 rounded-lg border border-gray-300 dark:border-[#2a4a7f] bg-white dark:bg-[#243656] text-gray-800 dark:text-white text-sm outline-none cursor-pointer focus:border-[#7a9cff] hover:border-[#7a9cff]/50 transition-all duration-200">
           <option value="alta">Alta</option>
           <option value="media">Media</option>
           <option value="baja">Baja</option>
         </select>
-        
         <button id="btnAnadir"
-          class="px-6 py-2.5 rounded-lg bg-[#7a9cff] text-[#1a1a2e] text-sm font-bold
-                 hover:opacity-85 active:scale-95
-                 focus:outline-none focus:ring-2 focus:ring-[#7a9cff] focus:ring-offset-2 focus:ring-offset-[#1a1a2e]
-                 transition-all duration-200">
+          class="px-6 py-2.5 rounded-lg bg-[#7a9cff] text-[#1a1a2e] text-sm font-bold hover:opacity-85 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#7a9cff] focus:ring-offset-2 focus:ring-offset-[#1a1a2e] transition-all duration-200">
           Añadir
         </button>
       </div>
 
       <input type="text" id="inputBusqueda" placeholder="Buscar tarea"
-        class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 dark:border-[#2a4a7f]
-               bg-white dark:bg-[#243656] text-gray-800 dark:text-white text-sm
-               placeholder-gray-400 dark:placeholder-[#aaaaaa] outline-none mb-6
-               focus:border-[#7a9cff] hover:border-[#7a9cff]/50 transition-all duration-200"/>
+        class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 dark:border-[#2a4a7f] bg-white dark:bg-[#243656] text-gray-800 dark:text-white text-sm placeholder-gray-400 dark:placeholder-[#aaaaaa] outline-none mb-6 focus:border-[#7a9cff] hover:border-[#7a9cff]/50 transition-all duration-200"/>
 
       <section id="seccion-alta" class="mb-7">
         <h2 class="text-xs uppercase text-gray-400 dark:text-[#aaaaaa] mb-2.5 tracking-wider">Prioridad Alta</h2>
       </section>
-
       <section id="seccion-media" class="mb-7">
         <h2 class="text-xs uppercase text-gray-400 dark:text-[#aaaaaa] mb-2.5 tracking-wider">Prioridad Media</h2>
       </section>
-
       <section id="seccion-baja" class="mb-7">
         <h2 class="text-xs uppercase text-gray-400 dark:text-[#aaaaaa] mb-2.5 tracking-wider">Prioridad Baja</h2>
       </section>

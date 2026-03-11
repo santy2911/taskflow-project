@@ -47,3 +47,6 @@
   aside nav { flex-direction: row; flex-wrap: wrap; gap: 6px; }
   main { padding: 16px 0; }
 }
+
+.arrastrando { opacity: 0.4; }
+.drag-over { border: 2px dashed #7a9cff; border-radius: 10px; background: #7a9cff1a; }
