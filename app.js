@@ -110,8 +110,9 @@ function crearTareaElemento(t) {
 
     if (t.completada) tarea.classList.add('completada');
 
-    // Orden: nombre | lápiz | categoría | badge | X
+    // Orden: handle | nombre | lápiz | categoría | badge | X
     tarea.innerHTML = `
+        <span class="dragHandle" title="Arrastrar tarea" aria-label="Arrastrar tarea">⠿</span>
         <div class="nombre">${t.texto}</div>
         <button class="btnEditar" title="Editar tarea" aria-label="Editar tarea">🖊️</button>
         <div class="categoria">Categoría: ${t.categoria}</div>

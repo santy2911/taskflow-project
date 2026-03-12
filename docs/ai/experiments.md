@@ -265,3 +265,4 @@ Con IA: segundos, igual pero añade comprobación si no hay tareas antes de most
 Sin IA: 10-15 min, if/else para cada estado
 Con IA: segundos, agrupa todo en una sola expresión con arrow function
 
+

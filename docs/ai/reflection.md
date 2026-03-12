@@ -33,3 +33,4 @@ Así que por eso creo que la IA es útil como apoyo, pero no debería sustituir 
 Prefiero programar sin ayuda cuando quiero asegurarme de que entiendo bien lo que estoy escribiendo. Por ejemplo cuando estoy practicando algo nuevo o cuando quiero comprobar si realmente sé hacerlo por mi cuenta.
 
 Si se usa la IA para todo, al final no sabes si realmente estás aprendiendo algo o solo estás copiando las soluciones. Hay partes del proyecto que prefiero haber escrito yo mismo aunque sean más simples, porque así sé exactamente por qué funcionan.
+
