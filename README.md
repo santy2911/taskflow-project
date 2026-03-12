@@ -2,7 +2,7 @@
 
 Aplicación web de gestión de tareas desarrollada como proyecto del bootcamp. Permite crear, organizar y hacer seguimiento de tareas con sistema de prioridades, filtros y persistencia de datos.
 
-🔗 **Demo en producción:** [taskflow-project.vercel.app](https://taskflow-project.vercel.app) <!-- Actualiza con tu URL real -->
+🔗 **Demo en producción:** [https://taskflow-project-u6w6.vercel.app/]
 
 ---
 
