@@ -18,16 +18,21 @@ Aplicación web de gestión de tareas desarrollada como proyecto del bootcamp. P
 - **Barra de progreso** que muestra el porcentaje de tareas completadas en tiempo real
 - **Drag & drop** para mover tareas entre secciones de prioridad
 - **Modo oscuro** con preferencia guardada en localStorage
-- **Persistencia** — los datos se mantienen al recargar la página
+- **API REST** con servidor Node.js + Express para gestionar las tareas
 
 ---
 
 ## Tecnologías
 
+**Frontend**
 - HTML5 semántico
 - CSS3 + Tailwind CSS (CDN)
 - JavaScript vanilla (sin frameworks)
-- LocalStorage para persistencia de datos
+- Fetch API para comunicación con el servidor
+
+**Backend**
+- Node.js
+- Express.js
 
 ---
 
@@ -35,39 +40,93 @@ Aplicación web de gestión de tareas desarrollada como proyecto del bootcamp. P
 
 ```
 taskflow-project/
-├── index.html       # Estructura de la interfaz
-├── style.css        # Estilos personalizados y dark mode
-├── app.js           # Lógica de la aplicación
+├── index.html              # Estructura de la interfaz
+├── style.css               # Estilos personalizados y dark mode
+├── app.js                  # Lógica del frontend y comunicación con la API
+├── src/
+│   └── api/
+│       └── client.js       # Funciones de comunicación con el servidor
+├── server/
+│   ├── .env                # Variables de entorno
+│   ├── .gitignore
+│   ├── package.json
+│   └── src/
+│       ├── index.js        # Punto de entrada del servidor
+│       ├── config/
+│       │   └── env.js      # Validación de variables de entorno
+│       ├── controllers/
+│       │   └── task.controller.js  # Lógica de las peticiones HTTP
+│       ├── routes/
+│       │   └── task.routes.js      # Definición de endpoints
+│       └── services/
+│           └── task.service.js     # Lógica de negocio pura
 ├── docs/
-│   └── ai/          # Documentación sobre uso de IA en el desarrollo
+│   └── ai/                 # Documentación sobre uso de IA en el desarrollo
 └── README.md
 ```
 
 ---
 
-## Ejemplos de uso
+## Arquitectura del backend
 
-**Añadir una tarea:**
-1. Escribe el nombre en el campo "Nueva tarea"
-2. Opcionalmente añade una categoría (por defecto se asigna "General")
-3. Selecciona la prioridad (alta, media, baja)
-4. Pulsa "Añadir" o presiona Enter
+El servidor sigue una arquitectura por capas que separa las responsabilidades:
 
-**Editar el nombre de una tarea:**
-1. Pulsa el botón 🖊️ que aparece junto al nombre
-2. Edita el texto directamente sobre la tarea
-3. Pulsa Enter o haz click fuera para guardar — Escape para cancelar
+**Rutas** (`task.routes.js`) — Escuchan la URL y el HTTP y los dirigen al controlador correspondiente. No contienen ninguna lógica.
 
-**Completar todas las tareas:**
-- Pulsa "Completar todas" para marcarlas todas de golpe
-- El botón cambia a "Desmarcar todas" para revertir la acción
+**Controladores** (`task.controller.js`) — Reciben los datos de la petición, los validan y llaman al servicio. Devuelven la respuesta HTTP con el código correcto.
 
-**Mover una tarea de prioridad:**
-- Arrastra cualquier tarea y suéltala en otra sección
+**Servicios** (`task.service.js`) — Contienen la lógica pura de la aplicación. No saben nada de HTTP ni de Express, solo trabajan con los datos.
 
-**Filtrar tareas:**
-- Usa el selector de prioridad para ver solo tareas de un nivel
-- Usa el selector de estado para ver solo pendientes o completadas
+**Middlewares utilizados:**
+- `express.json()` — convierte el cuerpo de las peticiones de texto JSON a objeto JavaScript, disponible en `req.body`
+- `cors()` — permite que el frontend en un puerto distinto pueda hacer peticiones al servidor sin ser bloqueado por el navegador
+- Manejador global de errores `(err, req, res, next)` — captura cualquier error no controlado y devuelve una respuesta limpia sin filtrar detalles técnicos
+
+---
+
+## API REST — Endpoints
+
+Base URL: `http://localhost:3000/api/v1/tasks`
+
+| Método | Endpoint | Descripción | Código de éxito |
+|--------|----------|-------------|-----------------|
+| GET | `/` | Obtener todas las tareas | 200 |
+| POST | `/` | Crear una nueva tarea | 201 |
+| DELETE | `/:id` | Eliminar una tarea por ID | 204 |
+
+**Ejemplo — Crear una tarea:**
+```json
+POST /api/v1/tasks
+Content-Type: application/json
+
+{
+  "texto": "Estudiar",
+  "categoria": "Estudios",
+  "prioridad": "alta"
+}
+```
+
+**Respuesta:**
+```json
+{
+  "id": 1234567890,
+  "texto": "Estudiar",
+  "categoria": "Estudios",
+  "prioridad": "alta",
+  "completada": false
+}
+```
+
+**Ejemplo — Eliminar una tarea:**
+```
+DELETE /api/v1/tasks/1234567890
+→ 204 No Content
+```
+
+**Errores posibles:**
+- `400` — Datos incorrectos (por ejemplo, texto vacío)
+- `404` — Tarea no encontrada
+- `500` — Error interno del servidor
 
 ---
 
@@ -80,11 +139,13 @@ taskflow-project/
 | Marcar tarea como completada | Se tacha y actualiza el progreso |
 | Editar nombre de una tarea | Se guarda correctamente |
 | Completar todas y desmarcar todas | Alterna correctamente |
-| Eliminar tarea individual | Se elimina del DOM y del storage |
+| Eliminar tarea individual | Se elimina del servidor y del DOM |
 | Eliminar todas las tareas | Pide confirmación antes de borrar |
-| Recargar la página | Los datos persisten |
 | Activar modo oscuro y recargar | La preferencia se mantiene |
 | Drag & drop entre secciones | Cambia la prioridad correctamente |
+| POST sin texto al servidor | Devuelve error 400 |
+| DELETE de tarea inexistente | Devuelve error 404 |
+| Frontend con servidor apagado | Muestra mensaje de error en pantalla |
 
 ---
 

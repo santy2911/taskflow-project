@@ -1,22 +1,104 @@
-const inputTarea     = document.getElementById('inputTarea');
-const inputCategoria = document.getElementById('inputCategoria');
-const selectPrioridad = document.getElementById('selectPrioridad');
-const btnAnadir      = document.getElementById('btnAnadir');
-const inputBusqueda  = document.getElementById('inputBusqueda');
-const btnTema        = document.getElementById('btnTema');
-const filtroPrioridad = document.getElementById('filtroPrioridad');
-const filtroEstado   = document.getElementById('filtroEstado');
+const $ = (selector, root = document) => root.querySelector(selector);
+const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+
+const inputTarea = $('#inputTarea');
+const inputCategoria = $('#inputCategoria');
+const selectPrioridad = $('#selectPrioridad');
+const btnAnadir = $('#btnAnadir');
+const inputBusqueda = $('#inputBusqueda');
+const btnTema = $('#btnTema');
+const filtroPrioridad = $('#filtroPrioridad');
+const filtroEstado = $('#filtroEstado');
+
+const main = $('main');
+const msgErrorGenerico = 'Error, inténtalo de nuevo.';
 
 let tareas = [];
 let tareaArrastrada = null;
 
-/**
- * Guarda el array de tareas en el localStorage como JSON.
- * Se llama cada vez que se añade, elimina o modifica una tarea.
- */
-function guardarEnStorage() {
-    localStorage.setItem('tareas', JSON.stringify(tareas));
+// ==========================================
+// CAPA DE RED — comunicación con el servidor
+// ==========================================
+
+const API_URL = 'http://localhost:3000/api/v1/tasks';
+
+
+async function obtenerTareasAPI() {
+    const res = await fetch(API_URL);
+    if (!res.ok) throw new Error('Error al obtener las tareas');
+    return await res.json();
 }
+
+/**
+ * Crea una nueva tarea en el servidor.
+ * @param {Object} datos - Datos de la tarea.
+ * @returns {Object} La tarea creada.
+ */
+async function crearTareaAPI(datos) {
+    const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(datos)
+    });
+    if (!res.ok) throw new Error('Error al crear la tarea');
+    return await res.json();
+}
+
+/**
+ * Elimina una tarea del servidor por su id.
+ * @param {number} id - ID de la tarea a eliminar.
+ */
+async function eliminarTareaAPI(id) {
+    const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+    if (!res.ok) throw new Error('Error al eliminar la tarea');
+}
+
+// ==========================================
+// UI — mostrar estados de carga y error
+// ==========================================
+
+function getOrCreate(id, create) {
+    return document.getElementById(id) ?? create();
+}
+
+/**
+ * Muestra u oculta el indicador de carga en el main.
+ * @param {boolean} visible - true para mostrar, false para ocultar.
+ */
+function mostrarCargando(visible) {
+    if (visible) {
+        getOrCreate('indicadorCarga', () => {
+            const indicador = document.createElement('p');
+            indicador.id = 'indicadorCarga';
+            indicador.textContent = 'Cargando tareas...';
+            indicador.style.cssText = 'text-align:center; color:#7a9cff; padding:20px;';
+            main.prepend(indicador);
+            return indicador;
+        });
+    } else {
+        document.getElementById('indicadorCarga')?.remove();
+    }
+}
+
+/**
+ * Muestra un mensaje de error temporal en el main.
+ * @param {string} mensaje - Texto del error a mostrar.
+ */
+function mostrarError(mensaje) {
+    const errorDiv = getOrCreate('errorRed', () => {
+        const div = document.createElement('p');
+        div.id = 'errorRed';
+        div.style.cssText = 'text-align:center; color:#ff4757; padding:10px;';
+        main.prepend(div);
+        return div;
+    });
+    errorDiv.textContent = mensaje;
+    setTimeout(() => errorDiv.remove(), 4000);
+}
+
+// ==========================================
+// PROGRESO Y CONTADORES
+// ==========================================
 
 /**
  * Actualiza la barra de progreso del aside según el número de tareas completadas.
@@ -30,11 +112,11 @@ function actualizarProgreso() {
     const completadas = tareas.filter(t => t.completada).length;
     const porcentaje = total === 0 ? 0 : Math.round((completadas / total) * 100);
 
-    document.getElementById('barraProgreso').style.width = porcentaje + '%';
-    document.getElementById('porcentajeTexto').textContent = porcentaje + '%';
-    document.getElementById('progresoTextoDetalle').textContent = completadas + ' de ' + total + ' tareas';
-
     const barra = document.getElementById('barraProgreso');
+    barra.style.width = `${porcentaje}%`;
+    document.getElementById('porcentajeTexto').textContent = `${porcentaje}%`;
+    document.getElementById('progresoTextoDetalle').textContent = `${completadas} de ${total} tareas`;
+
     if (porcentaje === 100) {
         barra.style.backgroundColor = '#2ed573';
     } else if (porcentaje >= 50) {
@@ -49,18 +131,20 @@ function actualizarProgreso() {
  * Tiene en cuenta los filtros activos de prioridad y estado.
  */
 function actualizarContadores() {
-    ['alta', 'media', 'baja'].forEach(prioridad => {
-        const seccion = document.getElementById('seccion-' + prioridad);
-        const prioridadActual = filtroPrioridad.value;
-        const estadoActual = filtroEstado.value;
+    const prioridadActual = filtroPrioridad.value;
+    const estadoActual = filtroEstado.value;
+    const coincideEstado = (completada) =>
+        estadoActual === 'todas' ||
+        (estadoActual === 'pendientes' && !completada) ||
+        (estadoActual === 'completadas' && completada);
 
-        const cantidad = tareas.filter(t => {
-            const coincidePrioridad = prioridadActual === 'todas' || t.prioridad === prioridadActual;
-            const coincideEstado = estadoActual === 'todas' ||
-                (estadoActual === 'pendientes' && !t.completada) ||
-                (estadoActual === 'completadas' && t.completada);
-            return t.prioridad === prioridad && coincidePrioridad && coincideEstado;
-        }).length;
+    ['alta', 'media', 'baja'].forEach(prioridad => {
+        const seccion = document.getElementById(`seccion-${prioridad}`);
+        const cantidad = tareas.filter(t =>
+            t.prioridad === prioridad &&
+            (prioridadActual === 'todas' || t.prioridad === prioridadActual) &&
+            coincideEstado(t.completada)
+        ).length;
 
         seccion.querySelector('h2').textContent = `Prioridad ${prioridad} (${cantidad})`;
     });
@@ -74,19 +158,23 @@ function actualizarContadores() {
 function aplicarFiltros() {
     const prioridadActual = filtroPrioridad.value;
     const estadoActual = filtroEstado.value;
+    const coincideEstado = (completada) =>
+        estadoActual === 'todas' ||
+        (estadoActual === 'pendientes' && !completada) ||
+        (estadoActual === 'completadas' && completada);
 
-    document.querySelectorAll('.tarea').forEach(function(tarea) {
+    $$('.tarea').forEach((tarea) => {
         const coincidePrioridad = prioridadActual === 'todas' || tarea.dataset.prioridad === prioridadActual;
         const esCompletada = tarea.classList.contains('completada');
-        const coincideEstado = estadoActual === 'todas' ||
-            (estadoActual === 'pendientes' && !esCompletada) ||
-            (estadoActual === 'completadas' && esCompletada);
-
-        tarea.style.display = coincidePrioridad && coincideEstado ? 'flex' : 'none';
+        tarea.style.display = coincidePrioridad && coincideEstado(esCompletada) ? 'flex' : 'none';
     });
 
     actualizarContadores();
 }
+
+// ==========================================
+// DOM — creación y eventos de tareas
+// ==========================================
 
 /**
  * Crea y devuelve el elemento HTML de una tarea con todos sus eventos asignados.
@@ -119,19 +207,20 @@ function crearTareaElemento(t) {
         <span class="badge ${t.prioridad}">${t.prioridad}</span>
         <button class="btnEliminar" aria-label="Eliminar tarea">✕</button>`;
 
+    const $t = (selector) => tarea.querySelector(selector);
+
     // Click en el nombre: marca/desmarca como completada
-    tarea.querySelector('.nombre').addEventListener('click', function() {
+    $t('.nombre').addEventListener('click', () => {
         tarea.classList.toggle('completada');
-        const index = tareas.findIndex(x => x.id === t.id);
-        tareas[index].completada = !tareas[index].completada;
-        guardarEnStorage();
+        const tareaData = tareas.find(x => x.id === t.id);
+        if (tareaData) tareaData.completada = !tareaData.completada;
         aplicarFiltros();
         actualizarProgreso();
     });
 
     // Botón lápiz: activa edición en línea sin cambiar el layout
-    tarea.querySelector('.btnEditar').addEventListener('click', function() {
-        const nombreDiv = tarea.querySelector('.nombre');
+    $t('.btnEditar').addEventListener('click', () => {
+        const nombreDiv = $t('.nombre');
         if (nombreDiv.contentEditable === 'true') return;
 
         nombreDiv.contentEditable = 'true';
@@ -150,18 +239,17 @@ function crearTareaElemento(t) {
             nombreDiv.contentEditable = 'false';
             nombreDiv.classList.remove('editando');
             if (nuevoTexto) {
-                const index = tareas.findIndex(x => x.id === t.id);
-                tareas[index].texto = nuevoTexto;
+                const tareaData = tareas.find(x => x.id === t.id);
+                if (tareaData) tareaData.texto = nuevoTexto;
                 t.texto = nuevoTexto;
                 nombreDiv.textContent = nuevoTexto;
-                guardarEnStorage();
             } else {
                 nombreDiv.textContent = t.texto;
             }
         }
 
         nombreDiv.addEventListener('blur', guardarEdicion, { once: true });
-        nombreDiv.addEventListener('keydown', function(e) {
+        nombreDiv.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') { e.preventDefault(); nombreDiv.blur(); }
             if (e.key === 'Escape') {
                 nombreDiv.textContent = t.texto;
@@ -171,25 +259,29 @@ function crearTareaElemento(t) {
         });
     });
 
-    // Botón X: elimina la tarea
-    tarea.querySelector('.btnEliminar').addEventListener('click', function() {
-        tareas = tareas.filter(x => x.id !== t.id);
-        guardarEnStorage();
-        tarea.remove();
-        actualizarContadores();
-        actualizarProgreso();
+    // Botón X: elimina la tarea del servidor y del DOM
+    $t('.btnEliminar').addEventListener('click', async () => {
+        try {
+            await eliminarTareaAPI(t.id);
+            tareas = tareas.filter(x => x.id !== t.id);
+            tarea.remove();
+            actualizarContadores();
+            actualizarProgreso();
+        } catch (error) {
+            mostrarError(msgErrorGenerico);
+        }
     });
 
-    tarea.addEventListener('dragstart', function(e) {
+    tarea.addEventListener('dragstart', (e) => {
         tareaArrastrada = tarea;
         e.dataTransfer.effectAllowed = 'move';
         setTimeout(() => tarea.style.opacity = '0.4', 0);
     });
 
-    tarea.addEventListener('dragend', function() {
+    tarea.addEventListener('dragend', () => {
         tarea.style.opacity = '1';
         tareaArrastrada = null;
-        document.querySelectorAll('section').forEach(s => s.classList.remove('drag-over'));
+        $$('section').forEach(s => s.classList.remove('drag-over'));
     });
 
     return tarea;
@@ -201,24 +293,24 @@ function crearTareaElemento(t) {
  * y en el DOM (badge y dataset), y guarda los cambios.
  */
 function configurarDropZones() {
-    document.querySelectorAll('section[id^="seccion-"]').forEach(seccion => {
-        seccion.addEventListener('dragover', function(e) {
+    $$('section[id^="seccion-"]').forEach(seccion => {
+        seccion.addEventListener('dragover', (e) => {
             e.preventDefault();
             seccion.classList.add('drag-over');
         });
 
-        seccion.addEventListener('dragleave', function() {
+        seccion.addEventListener('dragleave', () => {
             seccion.classList.remove('drag-over');
         });
 
-        seccion.addEventListener('drop', function(e) {
+        seccion.addEventListener('drop', (e) => {
             e.preventDefault();
             seccion.classList.remove('drag-over');
 
             if (!tareaArrastrada) return;
 
             const nuevaPrioridad = seccion.id.replace('seccion-', '');
-            const id = parseInt(tareaArrastrada.dataset.id);
+            const id = parseInt(tareaArrastrada.dataset.id, 10);
             const index = tareas.findIndex(x => x.id === id);
 
             if (index === -1) return;
@@ -231,18 +323,21 @@ function configurarDropZones() {
             badge.textContent = nuevaPrioridad;
 
             seccion.appendChild(tareaArrastrada);
-            guardarEnStorage();
             aplicarFiltros();
         });
     });
 }
 
+// ==========================================
+// EVENTOS GLOBALES
+// ==========================================
+
 /**
- * Valida el formulario, crea una nueva tarea y la añade al DOM y al array.
+ * Valida el formulario, crea una nueva tarea en el servidor y la añade al DOM.
  * Evita añadir tareas duplicadas (mismo nombre y categoría).
  * Limpia los campos del formulario al terminar.
  */
-btnAnadir.addEventListener('click', function() {
+btnAnadir.addEventListener('click', async function() {
     const texto = inputTarea.value.trim();
     const categoria = inputCategoria.value.trim() || 'General';
     if (texto === '') return;
@@ -255,28 +350,31 @@ btnAnadir.addEventListener('click', function() {
         return;
     }
 
-    const t = { id: Date.now(), texto, categoria, prioridad: selectPrioridad.value, completada: false };
-    tareas.push(t);
-    guardarEnStorage();
+    try {
+        const t = await crearTareaAPI({ texto, categoria, prioridad: selectPrioridad.value });
+        tareas.push(t);
 
-    const tarea = crearTareaElemento(t);
-    document.getElementById('seccion-' + t.prioridad).appendChild(tarea);
-    aplicarFiltros();
-    actualizarProgreso();
+        const tarea = crearTareaElemento(t);
+        document.getElementById(`seccion-${t.prioridad}`).appendChild(tarea);
+        aplicarFiltros();
+        actualizarProgreso();
 
-    inputTarea.value = '';
-    inputCategoria.value = '';
+        inputTarea.value = '';
+        inputCategoria.value = '';
+    } catch (error) {
+        mostrarError(msgErrorGenerico);
+    }
 });
 
 // Permite añadir tareas pulsando Enter desde el input de nombre
-inputTarea.addEventListener('keydown', function(e) {
+inputTarea.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') btnAnadir.click();
 });
 
 // Filtra las tareas visibles en tiempo real según el texto escrito
-inputBusqueda.addEventListener('input', function() {
+inputBusqueda.addEventListener('input', () => {
     const busqueda = inputBusqueda.value.toLowerCase().trim();
-    document.querySelectorAll('.tarea').forEach(function(tarea) {
+    $$('.tarea').forEach((tarea) => {
         const nombre = tarea.querySelector('.nombre').textContent.toLowerCase();
         tarea.style.display = nombre.includes(busqueda) ? 'flex' : 'none';
     });
@@ -296,8 +394,7 @@ document.getElementById('btnCompletarTodo').addEventListener('click', function()
     const todasCompletadas = tareas.every(t => t.completada);
 
     tareas.forEach(t => t.completada = !todasCompletadas);
-    guardarEnStorage();
-    document.querySelectorAll('.tarea').forEach(t => {
+    $$('.tarea').forEach(t => {
         t.classList.toggle('completada', !todasCompletadas);
     });
     btn.textContent = todasCompletadas ? 'Completar todas' : 'Desmarcar todas';
@@ -305,20 +402,26 @@ document.getElementById('btnCompletarTodo').addEventListener('click', function()
     actualizarProgreso();
 });
 
-// Elimina todas las tareas del DOM, del array y del localStorage tras confirmación
-document.getElementById('btnEliminarTodo').addEventListener('click', function() {
+// Elimina todas las tareas del servidor, del DOM y del array tras confirmación
+document.getElementById('btnEliminarTodo').addEventListener('click', async function() {
     if (tareas.length === 0) return;
     if (!confirm('¿Seguro que quieres eliminar todas las tareas?')) return;
-    tareas = [];
-    guardarEnStorage();
-    document.querySelectorAll('.tarea').forEach(t => t.remove());
-    actualizarContadores();
-    actualizarProgreso();
+
+    try {
+        await Promise.all(tareas.map(t => eliminarTareaAPI(t.id)));
+        tareas = [];
+        $$('.tarea').forEach(t => t.remove());
+        actualizarContadores();
+        actualizarProgreso();
+    } catch (error) {
+        mostrarError(msgErrorGenerico);
+    }
 });
 
 /**
  * Aplica el tema claro u oscuro añadiendo o quitando la clase 'dark' en el html.
  * Actualiza el icono del botón y guarda la preferencia en localStorage.
+ * El tema sí se sigue guardando en localStorage porque es preferencia visual, no datos.
  *
  * @param {boolean} oscuro - true para activar el modo oscuro, false para el claro.
  */
@@ -334,20 +437,28 @@ btnTema.addEventListener('click', function() {
     aplicarTema(!document.documentElement.classList.contains('dark'));
 });
 
+// ==========================================
+// ARRANQUE — carga inicial desde el servidor
+// ==========================================
+
 /**
- * Lee las tareas guardadas en localStorage y las renderiza en el DOM.
- * Si no hay datos previos inicializa el array vacío.
- * Al terminar aplica los filtros, actualiza el progreso y configura el drag & drop.
+ * Carga las tareas desde el servidor y las renderiza en el DOM.
+ * Muestra un indicador de carga mientras espera la respuesta.
+ * Si el servidor no responde muestra un mensaje de error.
  */
-function cargarTareas() {
-    const guardadas = localStorage.getItem('tareas');
-    tareas = guardadas ? JSON.parse(guardadas) : [];
-    tareas.forEach(function(t) {
-        document.getElementById('seccion-' + t.prioridad).appendChild(crearTareaElemento(t));
-    });
-    aplicarFiltros();
-    actualizarProgreso();
-    configurarDropZones();
+async function cargarTareas() {
+    mostrarCargando(true);
+    try {
+        tareas = await obtenerTareasAPI();
+        tareas.forEach(t => document.getElementById(`seccion-${t.prioridad}`).appendChild(crearTareaElemento(t)));
+        aplicarFiltros();
+        actualizarProgreso();
+        configurarDropZones();
+    } catch (error) {
+        mostrarError(msgErrorGenerico);
+    } finally {
+        mostrarCargando(false);
+    }
 }
 
 cargarTareas();
