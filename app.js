@@ -20,7 +20,7 @@ let tareaArrastrada = null;
 // CAPA DE RED — comunicación con el servidor
 // ==========================================
 
-const API_URL = 'http://localhost:3000/api/v1/tasks';
+const API_URL = 'https://taskflow-project-u6w6.vercel.app/api/v1/tasks';
 
 
 async function obtenerTareasAPI() {
